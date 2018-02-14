@@ -1,4 +1,4 @@
 import { AppRegistry } from 'react-native';
-import App from './src/App';
+import setup from './app/setup';
 
-AppRegistry.registerComponent('ReactReduxB', () => App);
+AppRegistry.registerComponent('ReactReduxB', () => setup());

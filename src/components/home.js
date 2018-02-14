@@ -1,42 +1,51 @@
 'use strict';
  
 import React, {Component} from 'react';
-var {
+import {
     StyleSheet,
     ListView,
     View,
     Text,
-    ActivityIndicator, TouchableHighlight, ActionSheetIOS, TouchableWithoutFeedback
-} = require('react-native');
+    ActivityIndicator, TouchableHighlight, TouchableWithoutFeedback
+}  from 'react-native';
+import ActionSheet from 'react-native-actionsheet';
  
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
  
-import * as ReduxActions from '../actions'; //Import your actions
+import * as ReduxActions from '../actions/index'; //Import your actions
  
 import {Actions} from 'react-native-router-flux';
- 
- 
+  
 //Buttons for Action Sheet
-var BUTTONS = [
-    "Edit",
-    "Delete",
-    'Cancel',
-];
+var options = [ 'Edit', 'Delete', 'Cancel'];
  
-var CANCEL_INDEX = 2;
+const CANCEL_INDEX = 2;
+const DESTRUCTIVE_INDEX = 2;
  
 var _this;
- 
- 
+  
 class Home extends Component {
     constructor(props) {
         super(props);
  
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
-            ds: ds
-        };
+            ds: ds,
+            selectedQuote: ''
+        }
+        this.handlePress = this.handlePress.bind(this)
+        this.showActionSheet = this.showActionSheet.bind(this)
+    }
+
+    showActionSheet(quote) {
+        this.ActionSheet.show();
+        this.state.selectedQuote = quote;
+    }
+
+    handlePress(buttonIndex) {
+        if (buttonIndex === 0) Actions.NewQuote({quote: this.state.selectedQuote, edit: true, title:"Edit Quote"});
+        else if (buttonIndex === 1) _this.props.deleteQuote(this.state.selectedQuote.id);
     }
  
     componentDidMount() {
@@ -63,7 +72,7 @@ class Home extends Component {
                               renderRow={this.renderRow.bind(this)}/>
  
                     <TouchableHighlight style={styles.addButton}
-                                        underlayColor='#ff7043' onPress={() => Actions.new_quote()}>
+                                        underlayColor='#ff7043' onPress={() => Actions.NewQuote()}>
                         <Text style={{fontSize: 25, color: 'white'}}>+</Text>
                     </TouchableHighlight>
                 </View>
@@ -73,29 +82,26 @@ class Home extends Component {
  
     renderRow(rowData, sectionID, rowID) {
         return (
-            <TouchableWithoutFeedback onPress={() => this.showOptions(rowData)}>
-                <View style={styles.row}>
-                    <Text style={styles.description}>
-                        {rowData.quote}
-                    </Text>
-                    <Text style={styles.author}>
-                        {rowData.author}
-                    </Text>
-                </View>
-            </TouchableWithoutFeedback>
+            <View>
+                <TouchableWithoutFeedback onPress={()=> this.showActionSheet(rowData)}>
+                    <View style={styles.row}>
+                        <Text style={styles.description}>
+                            {rowData.quote}
+                        </Text>
+                        <Text style={styles.author}>
+                            {rowData.author}
+                        </Text>
+                    </View>
+                </TouchableWithoutFeedback>
+                <ActionSheet
+                    ref={o => this.ActionSheet = o}
+                    options={options}
+                    cancelButtonIndex={CANCEL_INDEX}
+                    destructiveButtonIndex={DESTRUCTIVE_INDEX}
+                    onPress={this.handlePress}
+                />
+            </View>
         )
-    }
- 
-    showOptions(quote) {
-        ActionSheetIOS.showActionSheetWithOptions({
-                options: BUTTONS,
-                cancelButtonIndex: CANCEL_INDEX,
-                destructiveButtonIndex: 1,
-            },
-            (buttonIndex) => {
-                if (buttonIndex === 0) Actions.new_quote({quote: quote, edit: true, title:"Edit Quote"})
-                else if (buttonIndex === 1) _this.props.deleteQuote(quote.id)
-            });
     }
 };
  

@@ -21,22 +21,6 @@ const reducerCreate = params => {
     };
 };
  
-// Scene Style
-const getSceneStyle = (/* NavigationSceneRendererProps */ props, computedProps) => {
-    const style = {
-        flex: 1,
-        backgroundColor: '#fff',
-        shadowColor: null,
-        shadowOffset: null,
-        shadowOpacity: null,
-        shadowRadius: null,
-    };
-    if (computedProps.isActive) {
-        style.marginTop = computedProps.hideNavBar ? 0 : 64;
-    }
-    return style;
-};
- 
 class Main extends Component {
  
     componentDidMount() {
@@ -55,10 +39,10 @@ class Main extends Component {
     render() {
         return (
             <View style={{flex:1}}>
-                <Router createReducer={reducerCreate} getSceneStyle={getSceneStyle}>
+                <Router createReducer={reducerCreate}>
                     <Scene key="root">
-                        <Scene key="home" component={Home} title="Home" initial/>
-                        <Scene key="new_quote" component={NewQuote} title="New Quote"/>
+                        <Scene key="Home" component={Home} title="Home" initial/>
+                        <Scene key="NewQuote" component={NewQuote} title="New Quote"/>
                     </Scene>
                 </Router>
             </View>

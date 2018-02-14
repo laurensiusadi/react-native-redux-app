@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 
-import store from '../src/store'; //Import the store
-import Main from '../src/index' //Import the app/index.js file
+import store from './store';
+import Main from './index';
 
 function setup() {
     class Root extends Component {

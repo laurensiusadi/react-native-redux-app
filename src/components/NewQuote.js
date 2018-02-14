@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-var {StyleSheet, View, PixelRatio, Platform, Dimensions, Text,
-    LayoutAnimation, Keyboard, TextInput, TouchableOpacity} = require('react-native');
+import {StyleSheet, View, PixelRatio, Platform, Dimensions, Text,LayoutAnimation, Keyboard, TextInput, TouchableOpacity} from 'react-native';
  
 import {connect} from 'react-redux';
 import {addQuote, updateQuote} from '../actions'
@@ -57,7 +56,7 @@ class NewQuote extends Component {
                     <Text style={[styles.navText,
                         {
                             fontWeight: "500",
-                            color: (this.state.author.length > 0 && this.state.quote.length > 0) ? "#FFF" : "rgba(255,255,255,.5)"
+                            color: (this.state.author.length > 0 && this.state.quote.length > 0) ? "#FFF" : "rgba(255,255,255,1)"
                         }]}>
                         Save
                     </Text>
@@ -112,19 +111,20 @@ export default connect(mapStateToProps, {addQuote, updateQuote})(NewQuote);
 var styles = StyleSheet.create({
     saveBtn:{
         width: windowWidth,
-        height: 44,
+        height: 60,
         justifyContent: "center",
         alignItems: 'center',
-        backgroundColor:"#6B9EFA"
+        backgroundColor:"#2ECC71"
     },
     quote: {
         fontSize: TEXT_SIZE,
         lineHeight: 38,
-        fontFamily: 'Helvetica Neue',
+        fontFamily: 'Roboto',
         color: "#333333",
         padding: 16,
         paddingLeft:0,
         flex:1,
+        textAlignVertical: "top",
         height: 200,
         marginBottom:50,
         borderTopWidth: 1,
@@ -134,7 +134,7 @@ var styles = StyleSheet.create({
         fontWeight: "400",
         lineHeight: 22,
         fontSize: 16,
-        fontFamily: 'Helvetica Neue',
+        fontFamily: 'Roboto',
         height:25+32,
         padding: 16,
         paddingLeft:0

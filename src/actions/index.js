@@ -23,9 +23,10 @@ export function addQuote(quote){
 // Get Data - READ (R)
 export function getQuotes(){
     return (dispatch) => {
+        console.log('getQuotes action')
         AsyncStorage.getItem('data', (err, quotes) => {
                 if (quotes !== null){
-                dispatch({type: QUOTES_AVAILABLE, quotes:JSON.parse(quotes)});
+                dispatch({type: QUOTES_AVAILABLE, quotes: JSON.parse(quotes)});
             }
         });
     };

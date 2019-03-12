@@ -3,35 +3,31 @@
 import React, {Component} from 'react';
 import {
     StyleSheet,
-    ListView,
+    FlatList,
     View,
     Text,
     ActivityIndicator, TouchableHighlight, TouchableWithoutFeedback
 }  from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
  
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
  
 import * as ReduxActions from '../actions/index'; //Import your actions
  
-import {Actions} from 'react-native-router-flux';
+import { Actions } from 'react-native-router-flux';
   
 //Buttons for Action Sheet
-var options = [ 'Edit', 'Delete', 'Cancel'];
+let options = [ 'Edit', 'Delete', 'Cancel'];
  
 const CANCEL_INDEX = 2;
 const DESTRUCTIVE_INDEX = 2;
- 
-var _this;
-  
+   
 class Home extends Component {
     constructor(props) {
         super(props);
- 
-        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
-            ds: ds,
+            quotes: [],
             selectedQuote: ''
         }
         this.handlePress = this.handlePress.bind(this)
@@ -44,17 +40,24 @@ class Home extends Component {
     }
 
     handlePress(buttonIndex) {
-        if (buttonIndex === 0) Actions.NewQuote({quote: this.state.selectedQuote, edit: true, title:"Edit Quote"});
+        if (buttonIndex === 0) Actions.NewQuote({quote: this.state.selectedQuote, edit: true, title: "Edit Quote"});
         else if (buttonIndex === 1) _this.props.deleteQuote(this.state.selectedQuote.id);
     }
  
     componentDidMount() {
-        this.props.getQuotes();
-        _this = this;
+        console.log('componentDidMount Home')
+        this.props.getQuotes()
+        console.log(this.props.quotes)
     }
- 
+    
+    componentWillReceiveProps(nextprops) {
+        const { quotes } = nextprops
+        console.log('willRec ', quotes)
+        this.setState({ quotes })
+    }
+
     render() {
-        if (this.props.loading) {
+        if (this.state.quotes.length === 0) {
             return (
                 <View style={styles.activityIndicatorContainer}>
                     <ActivityIndicator
@@ -67,41 +70,41 @@ class Home extends Component {
         } else {
             return (
                 <View style={{flex: 1, backgroundColor: '#eaeaea'}}>
-                    <ListView enableEmptySections={true}
-                              dataSource={this.state.ds.cloneWithRows(this.props.quotes)}
-                              renderRow={this.renderRow.bind(this)}/>
- 
+                    <FlatList
+                        contentContainerStyle={{ flex: 1 }}
+                        data={this.state.quotes}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item, index }) => {
+                            return (
+                                <View>
+                                    <TouchableWithoutFeedback onPress={()=> this.showActionSheet(item)}>
+                                        <View style={styles.row}>
+                                            <Text style={styles.description}>
+                                                {item.quote}
+                                            </Text>
+                                            <Text style={styles.author}>
+                                                {item.author}
+                                            </Text>
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                    <ActionSheet
+                                        ref={o => this.ActionSheet = o}
+                                        options={options}
+                                        cancelButtonIndex={CANCEL_INDEX}
+                                        destructiveButtonIndex={DESTRUCTIVE_INDEX}
+                                        onPress={this.handlePress}
+                                    />
+                                </View>
+                            )
+                        }}
+                    />
                     <TouchableHighlight style={styles.addButton}
-                                        underlayColor='#ff7043' onPress={() => Actions.NewQuote()}>
-                        <Text style={{fontSize: 25, color: 'white'}}>+</Text>
+                        underlayColor='#ff7043' onPress={() => Actions.NewQuote()}>
+                        <Text style={{fontSize: 25, lineHeight: 30, color: 'white'}}>+</Text>
                     </TouchableHighlight>
                 </View>
             );
         }
-    }
- 
-    renderRow(rowData, sectionID, rowID) {
-        return (
-            <View>
-                <TouchableWithoutFeedback onPress={()=> this.showActionSheet(rowData)}>
-                    <View style={styles.row}>
-                        <Text style={styles.description}>
-                            {rowData.quote}
-                        </Text>
-                        <Text style={styles.author}>
-                            {rowData.author}
-                        </Text>
-                    </View>
-                </TouchableWithoutFeedback>
-                <ActionSheet
-                    ref={o => this.ActionSheet = o}
-                    options={options}
-                    cancelButtonIndex={CANCEL_INDEX}
-                    destructiveButtonIndex={DESTRUCTIVE_INDEX}
-                    onPress={this.handlePress}
-                />
-            </View>
-        )
     }
 };
  
